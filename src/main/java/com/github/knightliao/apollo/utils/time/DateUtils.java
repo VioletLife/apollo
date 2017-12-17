@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * 日期格式化utils
@@ -113,7 +113,7 @@ public final class DateUtils {
      */
     public static Date parseDate(String date, String pattern) {
         try {
-            return org.apache.commons.lang.time.DateUtils.parseDate(date, new String[] {pattern});
+            return org.apache.commons.lang3.time.DateUtils.parseDate(date, new String[] {pattern});
         } catch (ParseException e) {
             return null;
         }
@@ -131,7 +131,7 @@ public final class DateUtils {
             return null;
         }
         try {
-            return org.apache.commons.lang.time.DateUtils.parseDate(date, new String[] {DSP_DEFAULT_TIME_FORMAT});
+            return org.apache.commons.lang3.time.DateUtils.parseDate(date, new String[] {DSP_DEFAULT_TIME_FORMAT});
         } catch (ParseException e) {
             return null;
         }
@@ -145,7 +145,7 @@ public final class DateUtils {
      * @version 4.0
      */
     public static Date addYears(Date date, int amount) {
-        return org.apache.commons.lang.time.DateUtils.addYears(date, amount);
+        return org.apache.commons.lang3.time.DateUtils.addYears(date, amount);
     }
 
     /**
@@ -156,7 +156,7 @@ public final class DateUtils {
      * @version 4.0
      */
     public static Date addMonths(Date date, int amount) {
-        return org.apache.commons.lang.time.DateUtils.addMonths(date, amount);
+        return org.apache.commons.lang3.time.DateUtils.addMonths(date, amount);
     }
 
     /**
@@ -167,7 +167,7 @@ public final class DateUtils {
      * @version 4.0
      */
     public static Date addDays(Date date, int amount) {
-        return org.apache.commons.lang.time.DateUtils.addDays(date, amount);
+        return org.apache.commons.lang3.time.DateUtils.addDays(date, amount);
     }
 
     /**
@@ -178,7 +178,7 @@ public final class DateUtils {
      * @version 1.0
      */
     public static Date addMilliseconds(Date date, int amount) {
-        return org.apache.commons.lang.time.DateUtils.addMilliseconds(date, amount);
+        return org.apache.commons.lang3.time.DateUtils.addMilliseconds(date, amount);
     }
 
     /**
@@ -189,7 +189,7 @@ public final class DateUtils {
      * @version 4.0
      */
     public static Date addWeeks(Date date, int amount) {
-        return org.apache.commons.lang.time.DateUtils.addWeeks(date, amount);
+        return org.apache.commons.lang3.time.DateUtils.addWeeks(date, amount);
     }
 
     /**
@@ -204,13 +204,13 @@ public final class DateUtils {
         switch (type) {
             case DAY:
             default:
-                return diff / org.apache.commons.lang.time.DateUtils.MILLIS_PER_DAY;
+                return diff / org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY;
             case HOUR:
-                return diff / org.apache.commons.lang.time.DateUtils.MILLIS_PER_HOUR;
+                return diff / org.apache.commons.lang3.time.DateUtils.MILLIS_PER_HOUR;
             case MINUTE:
-                return diff / org.apache.commons.lang.time.DateUtils.MILLIS_PER_MINUTE;
+                return diff / org.apache.commons.lang3.time.DateUtils.MILLIS_PER_MINUTE;
             case SECOND:
-                return diff / org.apache.commons.lang.time.DateUtils.MILLIS_PER_SECOND;
+                return diff / org.apache.commons.lang3.time.DateUtils.MILLIS_PER_SECOND;
         }
     }
 
@@ -282,7 +282,7 @@ public final class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int firstDay = calendar.getActualMinimum(Calendar.DAY_OF_MONTH);
-        return org.apache.commons.lang.time.DateUtils.setDays(date, firstDay);
+        return org.apache.commons.lang3.time.DateUtils.setDays(date, firstDay);
     }
 
     /**
@@ -294,7 +294,7 @@ public final class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int firstDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-        return org.apache.commons.lang.time.DateUtils.setDays(date, firstDay);
+        return org.apache.commons.lang3.time.DateUtils.setDays(date, firstDay);
     }
 
     /**

@@ -18,11 +18,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Protocol;
 import redis.clients.util.SafeEncoder;
+
+import static org.apache.commons.pool2.impl.BaseObjectPoolConfig.*;
+import static org.apache.commons.pool2.impl.GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
+import static org.apache.commons.pool2.impl.GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
 /**
  * 封装Jedis API，提供redis命令调用的操作
@@ -55,31 +60,31 @@ public class RedisClient implements RedisOperation {
 
     private int timeout = Protocol.DEFAULT_TIMEOUT;
 
-    private int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
+    private int maxIdle = GenericObjectPoolConfig.DEFAULT_MAX_IDLE;
 
-    private long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
+    private long maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
 
-    private boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
+    private boolean testOnBorrow = GenericObjectPoolConfig.DEFAULT_TEST_ON_BORROW;
 
-    private int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
+    private int minIdle = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
-    private int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
+    private int maxTotal = GenericObjectPoolConfig.DEFAULT_MAX_TOTAL;
 
-    private boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
+    private boolean testOnReturn = GenericObjectPoolConfig.DEFAULT_TEST_ON_RETURN;
 
-    private boolean testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
+    private boolean testWhileIdle = GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
-    private long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    private long timeBetweenEvictionRunsMillis = GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 
-    private int numTestsPerEvictionRun = GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+    private int numTestsPerEvictionRun = GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
 
-    private long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private long minEvictableIdleTimeMillis = GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    private long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+    private long softMinEvictableIdleTimeMillis = GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 
-    private boolean lifo = GenericObjectPool.DEFAULT_LIFO;
+    private boolean lifo = GenericObjectPoolConfig.DEFAULT_LIFO;
 
-    private byte whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+    private boolean blockWhenExhausted =DEFAULT_BLOCK_WHEN_EXHAUSTED;
 
     /**
      * Creates a new instance of RedisClient.
@@ -107,26 +112,24 @@ public class RedisClient implements RedisOperation {
                 "> object created. Connection pool will be initiated when calling.");
     }
 
-    private GenericObjectPool.Config getPoolConfig() {
-        GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+    private GenericObjectPoolConfig getPoolConfig() {
+        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
         // maxIdle为负数时，不对pool size大小做限制，此处做限制，防止保持过多空闲redis连接
         if (this.maxIdle >= 0) {
-            poolConfig.maxIdle = this.maxIdle;
+            poolConfig.setMaxIdle(this.maxIdle);
         }
-        poolConfig.maxWait = this.maxWait;
-        if (this.whenExhaustedAction >= 0 && this.whenExhaustedAction < 3) {
-            poolConfig.whenExhaustedAction = this.whenExhaustedAction;
-        }
-        poolConfig.testOnBorrow = this.testOnBorrow;
-        poolConfig.minIdle = this.minIdle;
-        poolConfig.maxActive = this.maxActive;
-        poolConfig.testOnReturn = this.testOnReturn;
-        poolConfig.testWhileIdle = this.testWhileIdle;
-        poolConfig.timeBetweenEvictionRunsMillis = this.timeBetweenEvictionRunsMillis;
-        poolConfig.numTestsPerEvictionRun = this.numTestsPerEvictionRun;
-        poolConfig.minEvictableIdleTimeMillis = this.minEvictableIdleTimeMillis;
-        poolConfig.softMinEvictableIdleTimeMillis = this.softMinEvictableIdleTimeMillis;
-        poolConfig.lifo = this.lifo;
+
+        poolConfig.setBlockWhenExhausted(this.blockWhenExhausted);
+        poolConfig.setTestOnBorrow(this.testOnBorrow);
+        poolConfig.setMinIdle(this.minIdle);
+        poolConfig.setMaxTotal(this.maxTotal);
+        poolConfig.setTestOnReturn(this.testOnReturn);
+        poolConfig.setTestWhileIdle(this.testWhileIdle);
+        poolConfig.setTimeBetweenEvictionRunsMillis(this.timeBetweenEvictionRunsMillis);
+        poolConfig.setNumTestsPerEvictionRun(this.numTestsPerEvictionRun);
+        poolConfig.setMinEvictableIdleTimeMillis(this.minEvictableIdleTimeMillis);
+        poolConfig.setSoftMinEvictableIdleTimeMillis(this.softMinEvictableIdleTimeMillis);
+        poolConfig.setLifo(this.lifo);
         return poolConfig;
     }
 
@@ -1069,12 +1072,12 @@ public class RedisClient implements RedisOperation {
         this.maxWait = maxWait;
     }
 
-    public byte getWhenExhaustedAction() {
-        return whenExhaustedAction;
+    public boolean isBlockWhenExhausted() {
+        return blockWhenExhausted;
     }
 
-    public void setWhenExhaustedAction(byte whenExhaustedAction) {
-        this.whenExhaustedAction = whenExhaustedAction;
+    public void setBlockWhenExhausted(boolean blockWhenExhausted) {
+        this.blockWhenExhausted = blockWhenExhausted;
     }
 
     public int getRedisServerPort() {
@@ -1113,18 +1116,12 @@ public class RedisClient implements RedisOperation {
         this.minIdle = minIdle;
     }
 
-    /**
-     * @return the maxActive
-     */
-    public int getMaxActive() {
-        return maxActive;
+    public int getMaxTotal() {
+        return maxTotal;
     }
 
-    /**
-     * @param maxActive the maxActive to set
-     */
-    public void setMaxActive(int maxActive) {
-        this.maxActive = maxActive;
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
     }
 
     /**
